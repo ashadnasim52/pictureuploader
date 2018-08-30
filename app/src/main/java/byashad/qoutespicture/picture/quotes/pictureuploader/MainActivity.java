@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -20,6 +21,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private static int Gallery = 4;
     HashMap<String ,String> hashMap=new HashMap<>();
     Spinner spinner;
+
+    Uri downloadurl;
 
     Button uplad;
     ImageView upladedimage;
@@ -42,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
         uplad=findViewById(R.id.upload);
         upladedimage=findViewById(R.id.upladimagesee);
         spinner=findViewById(R.id.spinner);
+
+        String type[]={"motivation","love","attitude","funny","techfacts"};
+        ArrayAdapter<String> arrayAdapter=new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,type);
+        spinner.setAdapter(arrayAdapter);
 
 
         uplad.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +78,18 @@ public class MainActivity extends AppCompatActivity {
             filename.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                    downloadurl=taskSnapshot.getDownloadUrl();
+                    String downlaodurltostring=downloadurl.toString();
+                    hashMap.put("imageurl|",downlaodurltostring);
+                    hashMap.put("type",spinner.getSelectedItem().toString());
+                    urlofimage.push().setValue(hashMap);
+
+
+
+
 
                 }
             }).addOnFailureListener(new OnFailureListener() {
