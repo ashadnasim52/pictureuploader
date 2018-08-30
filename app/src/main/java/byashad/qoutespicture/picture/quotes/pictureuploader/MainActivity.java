@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
                     downloadurl=taskSnapshot.getDownloadUrl();
                     String downlaodurltostring=downloadurl.toString();
-                    hashMap.put("imageurl|",downlaodurltostring);
+                    hashMap.put("imageurl",downlaodurltostring);
                     hashMap.put("type",spinner.getSelectedItem().toString());
                     urlofimage.push().setValue(hashMap);
 
