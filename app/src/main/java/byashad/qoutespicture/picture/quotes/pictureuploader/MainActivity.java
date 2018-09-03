@@ -30,12 +30,15 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference urlofimage=ref.child("urls");
     StorageReference mStorageRef;
     private static int Gallery = 4;
+    int uploadornot=0;
+    //notbro
     HashMap<String ,String> hashMap=new HashMap<>();
     Spinner spinner;
 
     Uri downloadurl;
+    Uri uri;
 
-    Button uplad;
+    Button uplad,uplaodnow;
     ImageView upladedimage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         uplad=findViewById(R.id.upload);
         upladedimage=findViewById(R.id.upladimagesee);
+        uplaodnow=findViewById(R.id.uploadnow);
         spinner=findViewById(R.id.spinner);
 
         String type[]={"motivation","love","attitude","funny","techfacts"};
@@ -60,6 +64,42 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(i,Gallery);
             }
         });
+        uplaodnow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (uploadornot==1)
+                {
+                    StorageReference filename=mStorageRef.child("Status/"+uri.getLastPathSegment()+".png");
+                    filename.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+
+                            Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                            downloadurl=taskSnapshot.getDownloadUrl();
+                            String downlaodurltostring=downloadurl.toString();
+                            hashMap.put("imageurl",downlaodurltostring);
+                            hashMap.put("type",spinner.getSelectedItem().toString());
+                            hashMap.put("likes","0");
+                            urlofimage.push().setValue(hashMap);
+
+
+
+
+
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else
+                    Toast.makeText(MainActivity.this, "PLEASE SELECT IMAGE", Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
 
     }
@@ -67,37 +107,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Uri uri;
         if (requestCode==Gallery)
         {
-            uri=data.getData();
-            upladedimage.setImageURI(uri);
+            try {
+                uri=data.getData();
+                upladedimage.setImageURI(uri);
+                uploadornot=1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, "NO IMAGE SELECTED", Toast.LENGTH_SHORT).show();
+
+            }
 
 
-            StorageReference filename=mStorageRef.child("Status/"+uri.getLastPathSegment()+".png");
-            filename.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-
-                    Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
-                    downloadurl=taskSnapshot.getDownloadUrl();
-                    String downlaodurltostring=downloadurl.toString();
-                    hashMap.put("imageurl",downlaodurltostring);
-                    hashMap.put("type",spinner.getSelectedItem().toString());
-                    urlofimage.push().setValue(hashMap);
-
-
-
-
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
-                }
-            });
         }
     }
 }
