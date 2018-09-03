@@ -81,7 +81,19 @@ public class MainActivity extends AppCompatActivity {
                             hashMap.put("imageurl",downlaodurltostring);
                             hashMap.put("type",spinner.getSelectedItem().toString());
                             hashMap.put("likes","0");
-                            urlofimage.push().setValue(hashMap);
+                            urlofimage.push().setValue(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(getApplicationContext(), "SUCCESS on storing", Toast.LENGTH_SHORT).show();
+
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getApplicationContext(), "database  error"+e, Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
 
 
 
@@ -91,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "uploading failed"+e, Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
